@@ -1,12 +1,14 @@
-import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
+import Converter from "./converter";
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <Text>Open up App.tsx to start working on your app!</Text>
-      <Text>Hello World!</Text>
-      <StatusBar style="auto" />
+      <Text>Currency converter!</Text>
+      <Text>First currency </Text>
+      <Converter />
+      <Text>Second currency </Text>
+      <Converter />
     </View>
   );
 }
