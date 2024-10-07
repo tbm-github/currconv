@@ -1,1 +1,1 @@
-This is app for currency converter
+This is app on react native for currency converte
