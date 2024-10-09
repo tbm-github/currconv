@@ -20,7 +20,7 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
     oneSelect(val);
   };
   return (
-    <View style={styles.dropdownContainer}>
+    <View>
       <TouchableOpacity style={styles.dropDownStyle} onPress={selectOption}>
         <Text>
           {selectValue.value != "" ? selectValue.value : "Choose Option"}
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    width: 300,
+    width: 200,
     padding: 5,
     borderWidth: 1,
   },
