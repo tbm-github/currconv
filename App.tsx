@@ -1,8 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Alert, Button, StyleSheet, Text, View } from "react-native";
 import { Provider } from "react-redux";
 // import { store } from "./store/index";
-import Converter from "./converter";
+import Converter from "./modules/converter";
 import NumberInput from "./components/NumberInput";
+import MyButton from "./components/MyButton";
 
 export default function App() {
   return (
@@ -10,11 +11,12 @@ export default function App() {
     <View style={styles.container}>
       <Text>Currency converter!</Text>
       <Text>First currency </Text>
-      <NumberInput />
       <Converter />
       <Text>Second currency </Text>
-      <NumberInput />
       <Converter />
+      <NumberInput />
+
+      <MyButton onPress={() => Alert.alert("MyButton Converter currency")} />
     </View>
     // </Provider>
   );

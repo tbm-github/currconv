@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   openModal: {
-    marginTop: 190,
+    marginTop: 10,
     backgroundColor: "gray",
     width: "80%",
     marginLeft: "10%",
