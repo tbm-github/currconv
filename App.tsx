@@ -16,7 +16,12 @@ export default function App() {
       <Converter />
       <NumberInput />
 
-      <MyButton onPress={() => Alert.alert("MyButton Converter currency")} />
+      <MyButton
+        title="Converter"
+        buttonStyles={styles.buttonStyle}
+        textStyles={styles.text}
+        onPress={() => Alert.alert("MyButton Converter currency")}
+      />
     </View>
     // </Provider>
   );
@@ -28,5 +33,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
+  },
+  buttonStyle: {
+    color: "#fff",
+    backgroundColor: "gray",
+    fontWeight: "bold",
+  },
+  text: {
+    color: "green",
   },
 });

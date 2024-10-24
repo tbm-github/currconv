@@ -1,26 +1,27 @@
-import { ReactNode } from "react";
+import React, { CSSProperties } from "react";
 import {
   Pressable,
   StyleProp,
   StyleSheet,
   Text,
+  TextStyle,
   ViewStyle,
 } from "react-native";
 
 type Props = {
   disabled?: boolean;
   color?: string;
-  children?: ReactNode;
+  title?: string;
   onPress(): void;
   buttonStyles?: StyleProp<ViewStyle>;
-  textStyles?: StyleProp<ViewStyle>;
+  textStyles?: StyleProp<TextStyle>;
   accessibilityLabel?: string;
 };
 
 const MyButton = ({
   disabled,
   color,
-  children,
+  title,
   onPress,
   buttonStyles,
   accessibilityLabel,
@@ -34,7 +35,7 @@ const MyButton = ({
             ? "#ccc"
             : pressed
             ? "#aa0000"
-            : color || "red",
+            : color || "blue",
         },
         styles.container,
         buttonStyles,
@@ -44,9 +45,7 @@ const MyButton = ({
       accessible
       accessibilityLabel={accessibilityLabel || "A Button"}
     >
-      <Text style={[styles.buttonText, textStyles]}>
-        {children || "Press Me"}
-      </Text>
+      <Text style={[styles.buttonText, textStyles]}>{title || "Press Me"}</Text>
     </Pressable>
   );
 };
@@ -58,7 +57,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   buttonText: {
-    color: "whhite",
+    color: "red",
   },
 });
 
