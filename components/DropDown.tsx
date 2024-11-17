@@ -12,7 +12,7 @@ import { FilterOption } from "../config/types";
 
 type Props = {
   data: FilterOption[];
-  selectValue: FilterOption;
+  selectValue: FilterOption | null;
   oneSelect: (val: FilterOption) => void;
 };
 export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
@@ -30,7 +30,10 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
     <View>
       <TouchableOpacity style={styles.dropDownStyle} onPress={selectOption}>
         <Text>
-          {selectValue.value != "" ? selectValue.value : "Choose Currency"}
+          {
+            selectValue ? selectValue.value : "Choose Currency"
+            // selectValue.value != "" ? selectValue.value : "Choose Currency"
+          }
         </Text>
         <Image
           source={Images.arrow_drop_down}
@@ -50,8 +53,11 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
                   onPress={() => oneSelectItem(val)}
                   style={{
                     ...styles.optionName,
-                    backgroundColor:
-                      val.key === selectValue.key ? "pink" : "white",
+                    backgroundColor: selectValue
+                      ? val.key === selectValue.key
+                        ? "pink"
+                        : "white"
+                      : "white",
                   }}
                 >
                   <Text>{val.value}</Text>

@@ -37,6 +37,11 @@ type ExchangeRate = {
 
 type ExchangeRateData = { [key: string]: ExchangeRate };
 
+type ChoiseCurrency = {
+  key: string;
+  value: string;
+};
+
 export default function App() {
   const [isLoading, setLoading] = useState(true);
   const [dataCurrencies, setDataCurrencies] = useState<CurrenciesData | null>(
@@ -53,7 +58,8 @@ export default function App() {
       const response = await fetch(urlDataCurrencies, {
         method: "GET",
         headers: {
-          apikey: "cur_live_EPhQajklAhcd3Xbc8MihbSuQnyn8tyA73rDEU0lB",
+          apikey: "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
+          // apikey: "cur_live_EPhQajklAhcd3Xbc8MihbSuQnyn8tyA73rDEU0lB",
         },
       });
       const json = await response.json();
@@ -80,8 +86,9 @@ export default function App() {
     console.log(currencyList);
     //setDataFilters(currencyList);
   }
-  const [baseCurrency, setBaseCurrency] = useState({ key: "", value: "" });
-  const [convCurrency, setConvCurrency] = useState({ key: "", value: "" });
+  const [baseCurrency, setBaseCurrency] = useState<ChoiseCurrency | null>(null);
+  const [convCurrency, setConvCurrency] = useState<ChoiseCurrency | null>(null);
+  //const [convCurrency, setConvCurrency] = useState({ key: "", value: "" });
 
   const [filter, setFilter] = useState("");
 
@@ -102,53 +109,70 @@ export default function App() {
     if (+text || text == "") setNumber(text);
   };
 
-  const getConvCurrencies = async () => {
-    try {
-      const response = await fetch(
-        urlConvCurrencies +
-          "?base_currency=" +
-          `${baseCurrency.key}` +
-          "&currencies=" +
-          `${convCurrency.key}`,
-        {
-          method: "GET",
-          headers: {
-            apikey: "cur_live_EPhQajklAhcd3Xbc8MihbSuQnyn8tyA73rDEU0lB",
-          },
+  const [convertedAmount, setConvertedAmount] = useState("");
+  const calculate = () => {
+    console.log("calculate point 1");
+    if (dataExchangeRate) {
+      // console.log(dataExchangeRate);
+      // console.log(dataExchangeRate[`${convCurrency.key}`]);
+      console.log("calculate point 2");
+
+      if (convCurrency)
+        if (dataExchangeRate[`${convCurrency.key}`]) {
+          const result =
+            +number * dataExchangeRate[`${convCurrency.key}`]["value"];
+          // console.log(result);
+          setConvertedAmount(result.toFixed(2));
+          console.log("calculate point 3");
         }
-      );
-      const json = await response.json();
-      setDataExchangeRate(json.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+
+      //setResult(dataExchangeRate[`${convCurrency.key}`]["value"] * number);
+      // console.log(result);
     }
   };
+
+  const getConvCurrencies = async () => {
+    if (baseCurrency && convCurrency)
+      try {
+        setLoading(true);
+        const response = await fetch(
+          urlConvCurrencies + "?base_currency=" + `${baseCurrency.key}`,
+          {
+            method: "GET",
+            headers: {
+              apikey: "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
+            },
+          }
+        );
+        const json = await response.json();
+        setDataExchangeRate(json.data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+  };
+
   useEffect(() => {
     getConvCurrencies();
-  }, [number]);
+  }, [baseCurrency]);
 
-  const [convertedAmount, setConvertedAmount] = useState("");
-  if (dataExchangeRate) {
+  if (dataExchangeRate && convCurrency) {
     console.log(dataExchangeRate);
     console.log(dataExchangeRate[`${convCurrency.key}`]);
-    if (dataExchangeRate[`${convCurrency.key}`]) {
-      const result = +number * dataExchangeRate[`${convCurrency.key}`]["value"];
-      console.log(result);
-      // setConvertedAmount(result.toFixed(2));
-    }
-
-    //setResult(dataExchangeRate[`${convCurrency.key}`]["value"] * number);
-    // console.log(result);
+    console.log(
+      baseCurrency,
+      convCurrency,
+      number,
+      dataExchangeRate[`${convCurrency.key}`]["value"],
+      convertedAmount
+    );
   }
   return (
     // <Provider store={store}>
     <View style={styles.container}>
       <Text>Currency converter!</Text>
       <Text>First currency </Text>
-      {/* <Converter data={currencyList} /> */}
-      {/* <Filter data={currencyList} onSelect={onSelect} /> */}
       <DropDown
         selectValue={baseCurrency}
         data={currencyList}
@@ -175,12 +199,10 @@ export default function App() {
         buttonStyles={styles.buttonStyle}
         textStyles={styles.text}
         onPress={() => {
-          Alert.alert(
-            `MyButton Converter currency ${baseCurrency.key} to ${convCurrency.key}`
-          );
+          calculate();
         }}
       />
-      <Text>Result </Text>
+      <Text>Result {convertedAmount} </Text>
     </View>
     // </Provider>
   );
@@ -199,7 +221,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   text: {
-    color: "green",
+    color: "yellow",
   },
   input: {
     minHeight: 40,
