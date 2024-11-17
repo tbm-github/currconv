@@ -1,20 +1,8 @@
-import {
-  Alert,
-  TextInput,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-} from "react-native";
-// import { Provider } from "react-redux";
-// import { store } from "./store/index";
-import Converter from "./modules/converter";
-import NumberInput from "./components/NumberInput";
+import { TextInput, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import MyButton from "./components/MyButton";
 import { useEffect, useState } from "react";
 import { apikey } from "./config/apicfg";
 import { FilterOption } from "./config/types";
-import { Filter } from "./Filter";
 import { DropDown } from "./components/DropDown";
 
 type Currency = {
@@ -34,7 +22,6 @@ type ExchangeRate = {
   code: string;
   value: number;
 };
-
 type ExchangeRateData = { [key: string]: ExchangeRate };
 
 type ChoiseCurrency = {
@@ -55,10 +42,12 @@ export default function App() {
 
   const getDataCurrencies = async () => {
     try {
+      setLoading(true);
       const response = await fetch(urlDataCurrencies, {
         method: "GET",
         headers: {
-          apikey: "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
+          apikey: apikey,
+          // "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
           // apikey: "cur_live_EPhQajklAhcd3Xbc8MihbSuQnyn8tyA73rDEU0lB",
         },
       });
@@ -74,21 +63,15 @@ export default function App() {
   useEffect(() => {
     getDataCurrencies();
   }, []);
+
   let currencyList = [];
   if (dataCurrencies) {
-    console.log(Object.keys(dataCurrencies));
-    console.log(dataCurrencies["USD"]);
-
     for (var key in dataCurrencies) {
-      console.log(key, dataCurrencies[key]["name"]);
       currencyList.push({ key: key, value: dataCurrencies[key]["name"] });
     }
-    console.log(currencyList);
-    //setDataFilters(currencyList);
   }
   const [baseCurrency, setBaseCurrency] = useState<ChoiseCurrency | null>(null);
   const [convCurrency, setConvCurrency] = useState<ChoiseCurrency | null>(null);
-  //const [convCurrency, setConvCurrency] = useState({ key: "", value: "" });
 
   const [filter, setFilter] = useState("");
 
@@ -110,29 +93,20 @@ export default function App() {
   };
 
   const [convertedAmount, setConvertedAmount] = useState("");
-  const calculate = () => {
-    console.log("calculate point 1");
-    if (dataExchangeRate) {
-      // console.log(dataExchangeRate);
-      // console.log(dataExchangeRate[`${convCurrency.key}`]);
-      console.log("calculate point 2");
 
+  const calculate = () => {
+    if (dataExchangeRate) {
       if (convCurrency)
         if (dataExchangeRate[`${convCurrency.key}`]) {
           const result =
             +number * dataExchangeRate[`${convCurrency.key}`]["value"];
-          // console.log(result);
           setConvertedAmount(result.toFixed(2));
-          console.log("calculate point 3");
         }
-
-      //setResult(dataExchangeRate[`${convCurrency.key}`]["value"] * number);
-      // console.log(result);
     }
   };
 
   const getConvCurrencies = async () => {
-    if (baseCurrency && convCurrency)
+    if (baseCurrency)
       try {
         setLoading(true);
         const response = await fetch(
@@ -140,7 +114,8 @@ export default function App() {
           {
             method: "GET",
             headers: {
-              apikey: "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
+              apikey: apikey,
+              // "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
             },
           }
         );
@@ -157,34 +132,26 @@ export default function App() {
     getConvCurrencies();
   }, [baseCurrency]);
 
-  if (dataExchangeRate && convCurrency) {
-    console.log(dataExchangeRate);
-    console.log(dataExchangeRate[`${convCurrency.key}`]);
-    console.log(
-      baseCurrency,
-      convCurrency,
-      number,
-      dataExchangeRate[`${convCurrency.key}`]["value"],
-      convertedAmount
-    );
-  }
+  useEffect(() => {
+    setConvertedAmount("");
+  }, [baseCurrency, convCurrency, number]);
   return (
     // <Provider store={store}>
     <View style={styles.container}>
       <Text>Currency converter!</Text>
-      <Text>First currency </Text>
+      <Text>Base currency </Text>
       <DropDown
         selectValue={baseCurrency}
         data={currencyList}
         oneSelect={selectedBaseCurr}
       />
-      <Text>Second currency </Text>
+      <Text>Currency </Text>
       <DropDown
         selectValue={convCurrency}
         data={currencyList}
         oneSelect={selectedConvCurr}
       />
-      {/* <NumberInput /> */}
+      <Text>Amount</Text>
       <SafeAreaView>
         <TextInput
           style={styles.input}
@@ -202,9 +169,8 @@ export default function App() {
           calculate();
         }}
       />
-      <Text>Result {convertedAmount} </Text>
+      <Text>{convertedAmount} </Text>
     </View>
-    // </Provider>
   );
 }
 
