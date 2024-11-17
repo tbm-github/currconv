@@ -97,9 +97,9 @@ export default function App() {
     onSelect(item.key);
   };
 
-  const [number, setNumber] = useState(0);
+  const [number, setNumber] = useState("");
   const onChangeNumber = (text: string) => {
-    if (+text || text == "") setNumber(+text);
+    if (+text || text == "") setNumber(text);
   };
 
   const getConvCurrencies = async () => {
@@ -134,7 +134,7 @@ export default function App() {
     console.log(dataExchangeRate);
     console.log(dataExchangeRate[`${convCurrency.key}`]);
     if (dataExchangeRate[`${convCurrency.key}`]) {
-      const result = number * dataExchangeRate[`${convCurrency.key}`]["value"];
+      const result = +number * dataExchangeRate[`${convCurrency.key}`]["value"];
       console.log(result);
       // setConvertedAmount(result.toFixed(2));
     }
