@@ -5,6 +5,8 @@ import { Filter } from "../../Filter";
 import { FilterOption } from "../../config/types";
 type Props = {
   data: FilterOption[];
+  selectValue: FilterOption;
+  oneSelect: (val: FilterOption) => void;
 };
 const Converter = ({ data }: Props) => {
   const data_init: FilterOption[] = [

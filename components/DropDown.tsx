@@ -1,4 +1,11 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Image,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import React from "react";
 import { Images } from "../config/constants";
 import { FilterOption } from "../config/types";
@@ -23,7 +30,7 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
     <View>
       <TouchableOpacity style={styles.dropDownStyle} onPress={selectOption}>
         <Text>
-          {selectValue.value != "" ? selectValue.value : "Choose Option"}
+          {selectValue.value != "" ? selectValue.value : "Choose Currency"}
         </Text>
         <Image
           source={Images.arrow_drop_down}
@@ -35,21 +42,23 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
 
       {option && (
         <View style={styles.openDropDown}>
-          {data.map((val) => {
-            return (
-              <TouchableOpacity
-                key={val.key}
-                onPress={() => oneSelectItem(val)}
-                style={{
-                  ...styles.optionName,
-                  backgroundColor:
-                    val.key === selectValue.key ? "pink" : "white",
-                }}
-              >
-                <Text>{val.value}</Text>
-              </TouchableOpacity>
-            );
-          })}
+          <ScrollView style={styles.scrollView}>
+            {data.map((val) => {
+              return (
+                <TouchableOpacity
+                  key={val.key}
+                  onPress={() => oneSelectItem(val)}
+                  style={{
+                    ...styles.optionName,
+                    backgroundColor:
+                      val.key === selectValue.key ? "pink" : "white",
+                  }}
+                >
+                  <Text>{val.value}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
         </View>
       )}
     </View>
@@ -73,6 +82,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginVertical: 5,
     zIndex: 1,
+    height: "50%",
   },
   optionName: {
     margin: 5,
@@ -85,5 +95,8 @@ const styles = StyleSheet.create({
     backgroundColor: "gray",
     width: "80%",
     marginLeft: "10%",
+  },
+  scrollView: {
+    marginHorizontal: 20,
   },
 });
