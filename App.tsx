@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { apikey } from "./config/apicfg";
 import { FilterOption } from "./config/types";
 import { DropDown } from "./components/DropDown";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Currency = {
   symbol: string;
@@ -62,6 +63,7 @@ export default function App() {
 
   useEffect(() => {
     getDataCurrencies();
+    getData();
   }, []);
 
   let currencyList = [];
@@ -92,8 +94,51 @@ export default function App() {
     if (+text || text == "") setNumber(text);
   };
 
-  const [convertedAmount, setConvertedAmount] = useState("");
+  const storeData = async (value: object) => {
+    try {
+      const jsonValue = JSON.stringify(value);
+      console.log(jsonValue);
+      await AsyncStorage.setItem("UID001", jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+  const getData = async () => {
+    try {
+      const jsonRes = await AsyncStorage.getItem("UID001");
+      console.log(jsonRes);
 
+      if (jsonRes) {
+        const resultData = JSON.parse(jsonRes);
+        console.log("getData:", resultData);
+        console.log(resultData["baseCurrencyS"]);
+        console.log(resultData["convCurrencyS"]);
+        console.log(resultData["numberS"]);
+        console.log(resultData["resultS"]);
+
+        setBaseCurrency(resultData["baseCurrencyS"]["baseCurrency"]);
+        setConvCurrency(resultData["convCurrencyS"]["convCurrency"]);
+        setNumber(resultData["numberS"]["number"]);
+        setConvertedAmount(resultData["resultS"]["result"]);
+      }
+      // const jsonValue = await AsyncStorage.getItem("UID001");
+      // return jsonValue != null ? JSON.parse(jsonValue) : null;
+    } catch (e) {
+      // error reading value
+      console.log("Not AsyncStorage");
+    }
+  };
+  const saveAsyncStorage = (result: string) => {
+    const resultData = {
+      baseCurrencyS: { baseCurrency },
+      convCurrencyS: { convCurrency },
+      numberS: { number },
+      resultS: { result },
+    };
+    storeData(resultData);
+  };
+
+  const [convertedAmount, setConvertedAmount] = useState("");
   const calculate = () => {
     if (dataExchangeRate) {
       if (convCurrency)
@@ -101,6 +146,7 @@ export default function App() {
           const result =
             +number * dataExchangeRate[`${convCurrency.key}`]["value"];
           setConvertedAmount(result.toFixed(2));
+          saveAsyncStorage(result.toFixed(2));
         }
     }
   };
@@ -132,9 +178,9 @@ export default function App() {
     getConvCurrencies();
   }, [baseCurrency]);
 
-  useEffect(() => {
-    setConvertedAmount("");
-  }, [baseCurrency, convCurrency, number]);
+  // useEffect(() => {
+  //   setConvertedAmount("");
+  // }, [baseCurrency, convCurrency, number]);
   return (
     // <Provider store={store}>
     <View style={styles.container}>
