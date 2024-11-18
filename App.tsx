@@ -97,7 +97,6 @@ export default function App() {
   const storeData = async (value: object) => {
     try {
       const jsonValue = JSON.stringify(value);
-      console.log(jsonValue);
       await AsyncStorage.setItem("UID001", jsonValue);
     } catch (e) {
       // saving error
@@ -106,49 +105,35 @@ export default function App() {
   const getData = async () => {
     try {
       const jsonRes = await AsyncStorage.getItem("UID001");
-      console.log(jsonRes);
-
       if (jsonRes) {
         const resultData = JSON.parse(jsonRes);
-        console.log("getData:", resultData);
-        console.log(resultData["baseCurrencyS"]);
-        console.log(resultData["convCurrencyS"]);
-        console.log(resultData["numberS"]);
-        console.log(resultData["resultS"]);
-
         setBaseCurrency(resultData["baseCurrencyS"]["baseCurrency"]);
         setConvCurrency(resultData["convCurrencyS"]["convCurrency"]);
         setNumber(resultData["numberS"]["number"]);
+        setConvertedDate(resultData["convertedDateS"]["dateStr"]);
         setConvertedAmount(resultData["resultS"]["result"]);
       }
-      // const jsonValue = await AsyncStorage.getItem("UID001");
-      // return jsonValue != null ? JSON.parse(jsonValue) : null;
     } catch (e) {
       // error reading value
       console.log("Not AsyncStorage");
     }
   };
-  const saveAsyncStorage = (result: string) => {
+  const saveAsyncStorage = (dateStr: string, result: string) => {
     const resultData = {
       baseCurrencyS: { baseCurrency },
       convCurrencyS: { convCurrency },
       numberS: { number },
+      convertedDateS: { dateStr },
       resultS: { result },
     };
     storeData(resultData);
   };
 
   const [convertedAmount, setConvertedAmount] = useState("");
+  const [convertedDate, setConvertedDate] = useState("");
+
   const calculate = () => {
-    if (dataExchangeRate) {
-      if (convCurrency)
-        if (dataExchangeRate[`${convCurrency.key}`]) {
-          const result =
-            +number * dataExchangeRate[`${convCurrency.key}`]["value"];
-          setConvertedAmount(result.toFixed(2));
-          saveAsyncStorage(result.toFixed(2));
-        }
-    }
+    if (number != "") getConvCurrencies();
   };
 
   const getConvCurrencies = async () => {
@@ -167,6 +152,14 @@ export default function App() {
         );
         const json = await response.json();
         setDataExchangeRate(json.data);
+        if (convCurrency) {
+          const result = +number * json.data[`${convCurrency.key}`]["value"];
+
+          var convDate = new Date();
+          saveAsyncStorage(convDate.toString(), result.toFixed(2));
+          setConvertedDate(convDate.toString());
+          setConvertedAmount(result.toFixed(2));
+        }
       } catch (error) {
         console.error(error);
       } finally {
@@ -175,14 +168,10 @@ export default function App() {
   };
 
   useEffect(() => {
-    getConvCurrencies();
-  }, [baseCurrency]);
-
-  // useEffect(() => {
-  //   setConvertedAmount("");
-  // }, [baseCurrency, convCurrency, number]);
+    setConvertedDate("");
+    setConvertedAmount("");
+  }, [baseCurrency, convCurrency, number]);
   return (
-    // <Provider store={store}>
     <View style={styles.container}>
       <Text>Currency converter!</Text>
       <Text>Base currency </Text>
@@ -215,6 +204,7 @@ export default function App() {
           calculate();
         }}
       />
+      <Text>{convertedDate} </Text>
       <Text>{convertedAmount} </Text>
     </View>
   );
