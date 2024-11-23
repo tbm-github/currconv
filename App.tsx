@@ -40,7 +40,8 @@ export default function App() {
 
   const urlDataCurrencies = "https://api.currencyapi.com/v3/currencies";
   const urlConvCurrencies = "https://api.currencyapi.com/v3/latest";
-
+  // const { currencies, isLoadingCurr } = useCurrencies(); // Hook
+  // const { currencies, isLoadingCurr } = useExchCurrencies(); // Hook
   const getDataCurrencies = async () => {
     try {
       setLoading(true);
@@ -132,8 +133,19 @@ export default function App() {
   const [convertedAmount, setConvertedAmount] = useState("");
   const [convertedDate, setConvertedDate] = useState("");
 
-  const calculate = () => {
-    if (number != "") getConvCurrencies();
+  const calculate = async () => {
+    if (number != "") {
+      const { data } = await getConvCurrencies();
+
+      if (convCurrency) {
+        const result = +number * data[`${convCurrency.key}`]["value"];
+        setDataExchangeRate(data);
+        var convDate = new Date();
+        saveAsyncStorage(convDate.toString(), result.toFixed(2));
+        setConvertedDate(convDate.toString());
+        setConvertedAmount(result.toFixed(2));
+      }
+    }
   };
 
   const getConvCurrencies = async () => {
@@ -150,16 +162,7 @@ export default function App() {
             },
           }
         );
-        const json = await response.json();
-        setDataExchangeRate(json.data);
-        if (convCurrency) {
-          const result = +number * json.data[`${convCurrency.key}`]["value"];
-
-          var convDate = new Date();
-          saveAsyncStorage(convDate.toString(), result.toFixed(2));
-          setConvertedDate(convDate.toString());
-          setConvertedAmount(result.toFixed(2));
-        }
+        return response.json();
       } catch (error) {
         console.error(error);
       } finally {
@@ -171,6 +174,7 @@ export default function App() {
     setConvertedDate("");
     setConvertedAmount("");
   }, [baseCurrency, convCurrency, number]);
+
   return (
     <View style={styles.container}>
       <Text>Currency converter!</Text>
@@ -206,6 +210,7 @@ export default function App() {
       />
       <Text>{convertedDate} </Text>
       <Text>{convertedAmount} </Text>
+      {/* <Modal active={modalActive} setActive={setModalActive} /> */}
     </View>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { useState } from "react";
 import { ScrollView, View, Text, ActivityIndicator, Alert } from "react-native";
-import { Filter } from "../../Filter";
+import { Filter } from "../../components/Filter";
 import { FilterOption } from "../../config/types";
 type Props = {
   data: FilterOption[];

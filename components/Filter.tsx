@@ -1,8 +1,8 @@
 import React from "react";
 import { useState } from "react";
 import { StyleSheet, View } from "react-native";
-import { DropDown } from "./components/DropDown";
-import { FilterOption } from "./config/types";
+import { DropDown } from "./DropDown";
+import { FilterOption } from "../config/types";
 
 type Props = {
   data: FilterOption[];

@@ -6,9 +6,10 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Images } from "../config/constants";
 import { FilterOption } from "../config/types";
+import { Button, Overlay } from "@rneui/base";
 
 type Props = {
   data: FilterOption[];
@@ -16,7 +17,7 @@ type Props = {
   oneSelect: (val: FilterOption) => void;
 };
 export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
-  const [option, setOption] = React.useState(false);
+  const [option, setOption] = useState(false);
 
   const selectOption = () => {
     setOption(!option);
@@ -25,7 +26,15 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
   const oneSelectItem = (val: FilterOption) => {
     setOption(false);
     oneSelect(val);
+    toggleOverlay();
   };
+
+  const [visible, setVisible] = useState(false);
+
+  const toggleOverlay = () => {
+    setOption(!option);
+  };
+
   return (
     <View>
       <TouchableOpacity style={styles.dropDownStyle} onPress={selectOption}>
@@ -44,35 +53,42 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
       </TouchableOpacity>
 
       {option && (
-        <View style={styles.openDropDown}>
-          <ScrollView style={styles.scrollView}>
-            {data.map((val) => {
-              return (
-                <TouchableOpacity
-                  key={val.key}
-                  onPress={() => oneSelectItem(val)}
-                  style={{
-                    ...styles.optionName,
-                    backgroundColor: selectValue
-                      ? val.key === selectValue.key
-                        ? "pink"
-                        : "white"
-                      : "white",
-                  }}
-                >
-                  <Text>{val.value}</Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
-        </View>
+        <Overlay isVisible={option} onBackdropPress={toggleOverlay}>
+          <View style={styles.openDropDown}>
+            <ScrollView style={styles.scrollView}>
+              {data.map((val) => {
+                return (
+                  <TouchableOpacity
+                    key={val.key}
+                    onPress={() => oneSelectItem(val)}
+                    style={{
+                      ...styles.optionName,
+                      backgroundColor: selectValue
+                        ? val.key === selectValue.key
+                          ? "pink"
+                          : "white"
+                        : "white",
+                    }}
+                  >
+                    <Text>{val.value}</Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </ScrollView>
+          </View>
+        </Overlay>
       )}
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  dropdownContainer: {},
+  dropdownContainer: {
+    flex: 1,
+    justifyContent: "space-between",
+    padding: 20,
+    margin: 10,
+  },
   dropDownStyle: {
     minHeight: 40,
     borderRadius: 10,
@@ -84,11 +100,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   openDropDown: {
-    backgroundColor: "gray",
-    padding: 10,
-    marginVertical: 5,
-    zIndex: 1,
-    height: "50%",
+    backgroundColor: "beige",
+    height: 400,
   },
   optionName: {
     margin: 5,
@@ -96,13 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     borderWidth: 1,
   },
-  openModal: {
-    marginTop: 10,
-    backgroundColor: "gray",
-    width: "80%",
-    marginLeft: "10%",
-  },
   scrollView: {
-    marginHorizontal: 20,
+    marginHorizontal: 10,
   },
 });
