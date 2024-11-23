@@ -72,6 +72,9 @@ export default function App() {
     for (var key in dataCurrencies) {
       currencyList.push({ key: key, value: dataCurrencies[key]["name"] });
     }
+    currencyList.sort(function (a, b) {
+      return a.value > b.value ? 1 : -1;
+    });
   }
   const [baseCurrency, setBaseCurrency] = useState<ChoiseCurrency | null>(null);
   const [convCurrency, setConvCurrency] = useState<ChoiseCurrency | null>(null);
