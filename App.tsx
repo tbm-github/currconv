@@ -1,23 +1,12 @@
 import { TextInput, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import MyButton from "./components/MyButton";
 import { useEffect, useState } from "react";
-import { apikey } from "./config/apicfg";
+import { API_KEY } from "@env";
+//import { apikey } from "./config/apicfg";
 import { FilterOption } from "./config/types";
 import { DropDown } from "./components/DropDown";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
-type Currency = {
-  symbol: string;
-  name: string;
-  symbol_native: string;
-  decimal_digits: number;
-  rounding: number;
-  code: string;
-  name_plural: string;
-  type: string;
-  countries: string[];
-};
-type CurrenciesData = { [key: string]: Currency };
+import { useCurrencies } from "./useCurrencies";
 
 type ExchangeRate = {
   code: string;
@@ -25,59 +14,24 @@ type ExchangeRate = {
 };
 type ExchangeRateData = { [key: string]: ExchangeRate };
 
-type ChoiseCurrency = {
-  key: string;
-  value: string;
-};
-
 export default function App() {
   const [isLoading, setLoading] = useState(true);
-  const [dataCurrencies, setDataCurrencies] = useState<CurrenciesData | null>(
-    null
-  );
+
   const [dataExchangeRate, setDataExchangeRate] =
     useState<ExchangeRateData | null>(null);
 
-  const urlDataCurrencies = "https://api.currencyapi.com/v3/currencies";
+  //  const urlDataCurrencies = "https://api.currencyapi.com/v3/currencies";
   const urlConvCurrencies = "https://api.currencyapi.com/v3/latest";
   // const { currencies, isLoadingCurr } = useCurrencies(); // Hook
   // const { currencies, isLoadingCurr } = useExchCurrencies(); // Hook
-  const getDataCurrencies = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch(urlDataCurrencies, {
-        method: "GET",
-        headers: {
-          apikey: apikey,
-          // "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
-          // apikey: "cur_live_EPhQajklAhcd3Xbc8MihbSuQnyn8tyA73rDEU0lB",
-        },
-      });
-      const json = await response.json();
-      setDataCurrencies(json.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
-    getDataCurrencies();
     getData();
   }, []);
+  const currencyList = useCurrencies();
 
-  let currencyList = [];
-  if (dataCurrencies) {
-    for (var key in dataCurrencies) {
-      currencyList.push({ key: key, value: dataCurrencies[key]["name"] });
-    }
-    currencyList.sort(function (a, b) {
-      return a.value > b.value ? 1 : -1;
-    });
-  }
-  const [baseCurrency, setBaseCurrency] = useState<ChoiseCurrency | null>(null);
-  const [convCurrency, setConvCurrency] = useState<ChoiseCurrency | null>(null);
+  const [baseCurrency, setBaseCurrency] = useState<FilterOption | null>(null);
+  const [convCurrency, setConvCurrency] = useState<FilterOption | null>(null);
 
   const [filter, setFilter] = useState("");
 
@@ -160,7 +114,7 @@ export default function App() {
           {
             method: "GET",
             headers: {
-              apikey: apikey,
+              apikey: `${API_KEY}`,
               // "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
             },
           }

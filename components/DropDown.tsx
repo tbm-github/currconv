@@ -56,24 +56,26 @@ export const DropDown = ({ data, selectValue, oneSelect }: Props) => {
         <Overlay isVisible={option} onBackdropPress={toggleOverlay}>
           <View style={styles.openDropDown}>
             <ScrollView style={styles.scrollView}>
-              {data.map((val) => {
-                return (
-                  <TouchableOpacity
-                    key={val.key}
-                    onPress={() => oneSelectItem(val)}
-                    style={{
-                      ...styles.optionName,
-                      backgroundColor: selectValue
-                        ? val.key === selectValue.key
-                          ? "pink"
-                          : "white"
-                        : "white",
-                    }}
-                  >
-                    <Text>{val.value}</Text>
-                  </TouchableOpacity>
-                );
-              })}
+              {data
+                ? data.map((val) => {
+                    return (
+                      <TouchableOpacity
+                        key={val.key}
+                        onPress={() => oneSelectItem(val)}
+                        style={{
+                          ...styles.optionName,
+                          backgroundColor: selectValue
+                            ? val.key === selectValue.key
+                              ? "pink"
+                              : "white"
+                            : "white",
+                        }}
+                      >
+                        <Text>{val.value}</Text>
+                      </TouchableOpacity>
+                    );
+                  })
+                : null}
             </ScrollView>
           </View>
         </Overlay>
