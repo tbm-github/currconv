@@ -8,17 +8,14 @@ import { DropDown } from "./components/DropDown";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCurrencies } from "./useCurrencies";
 
-type ExchangeRate = {
-  code: string;
-  value: number;
-};
-type ExchangeRateData = { [key: string]: ExchangeRate };
-
 export default function App() {
   const [isLoading, setLoading] = useState(true);
-
-  const [dataExchangeRate, setDataExchangeRate] =
-    useState<ExchangeRateData | null>(null);
+  const [fromCurrency, setFromCurrency] = useState<FilterOption | null>(null);
+  const [toCurrency, setToCurrency] = useState<FilterOption | null>(null);
+  const [number, setNumber] = useState("");
+  const [convertedDate, setConvertedDate] = useState("");
+  const [convertedAmount, setConvertedAmount] = useState("");
+  const [titleAmount, setTitleAmount] = useState("Amount");
 
   //  const urlDataCurrencies = "https://api.currencyapi.com/v3/currencies";
   const urlConvCurrencies = "https://api.currencyapi.com/v3/latest";
@@ -28,26 +25,26 @@ export default function App() {
   useEffect(() => {
     getData();
   }, []);
-  const currencyList = useCurrencies();
 
-  const [baseCurrency, setBaseCurrency] = useState<FilterOption | null>(null);
-  const [convCurrency, setConvCurrency] = useState<FilterOption | null>(null);
+  const currencyList = useCurrencies();
 
   const [filter, setFilter] = useState("");
 
   const onSelect = (filter: string) => {
     setFilter(filter);
   };
-  const selectedBaseCurr = (item: FilterOption) => {
-    setBaseCurrency(item);
-    onSelect(item.key);
-  };
-  const selectedConvCurr = (item: FilterOption) => {
-    setConvCurrency(item);
+
+  const selectedFromCurrency = (item: FilterOption) => {
+    setFromCurrency(item);
+    setTitleAmount("Amount (" + `${item["key"]}` + ")");
     onSelect(item.key);
   };
 
-  const [number, setNumber] = useState("");
+  const selectedToCurrency = (item: FilterOption) => {
+    setToCurrency(item);
+    onSelect(item.key);
+  };
+
   const onChangeNumber = (text: string) => {
     if (+text || text == "") setNumber(text);
   };
@@ -65,11 +62,22 @@ export default function App() {
       const jsonRes = await AsyncStorage.getItem("UID001");
       if (jsonRes) {
         const resultData = JSON.parse(jsonRes);
-        setBaseCurrency(resultData["baseCurrencyS"]["baseCurrency"]);
-        setConvCurrency(resultData["convCurrencyS"]["convCurrency"]);
+        setFromCurrency(resultData["fromCurrencyS"]["fromCurrency"]);
+        setTitleAmount(
+          "Amount (" +
+            `${resultData["fromCurrencyS"]["fromCurrency"]["key"]}` +
+            ")"
+        );
+        setToCurrency(resultData["toCurrencyS"]["toCurrency"]);
         setNumber(resultData["numberS"]["number"]);
         setConvertedDate(resultData["convertedDateS"]["dateStr"]);
-        setConvertedAmount(resultData["resultS"]["result"]);
+        setConvertedAmount(
+          "Result: " +
+            `${resultData["resultS"]["result"]}` +
+            " (" +
+            `${resultData["toCurrencyS"]["toCurrency"]["key"]}` +
+            ")"
+        );
       }
     } catch (e) {
       // error reading value
@@ -78,8 +86,8 @@ export default function App() {
   };
   const saveAsyncStorage = (dateStr: string, result: string) => {
     const resultData = {
-      baseCurrencyS: { baseCurrency },
-      convCurrencyS: { convCurrency },
+      fromCurrencyS: { fromCurrency },
+      toCurrencyS: { toCurrency },
       numberS: { number },
       convertedDateS: { dateStr },
       resultS: { result },
@@ -87,30 +95,32 @@ export default function App() {
     storeData(resultData);
   };
 
-  const [convertedAmount, setConvertedAmount] = useState("");
-  const [convertedDate, setConvertedDate] = useState("");
-
   const calculate = async () => {
     if (number != "") {
-      const { data } = await getConvCurrencies();
+      const { data } = await getExchangeRate();
 
-      if (convCurrency) {
-        const result = +number * data[`${convCurrency.key}`]["value"];
-        setDataExchangeRate(data);
+      if (toCurrency) {
+        const result = +number * data[`${toCurrency.key}`]["value"];
         var convDate = new Date();
         saveAsyncStorage(convDate.toString(), result.toFixed(2));
         setConvertedDate(convDate.toString());
-        setConvertedAmount(result.toFixed(2));
+        setConvertedAmount(
+          "Result: " + result.toFixed(2) + " (" + `${toCurrency["key"]}` + ")"
+        );
       }
     }
   };
 
-  const getConvCurrencies = async () => {
-    if (baseCurrency)
+  const getExchangeRate = async () => {
+    if (fromCurrency && toCurrency)
       try {
         setLoading(true);
         const response = await fetch(
-          urlConvCurrencies + "?base_currency=" + `${baseCurrency.key}`,
+          urlConvCurrencies +
+            "?base_currency=" +
+            `${fromCurrency.key}` +
+            "&currencies=" +
+            `${toCurrency.key}`,
           {
             method: "GET",
             headers: {
@@ -130,24 +140,27 @@ export default function App() {
   useEffect(() => {
     setConvertedDate("");
     setConvertedAmount("");
-  }, [baseCurrency, convCurrency, number]);
+  }, [fromCurrency, toCurrency, number]);
 
   return (
     <View style={styles.container}>
-      <Text>Currency converter!</Text>
-      <Text>Base currency </Text>
+      <Text style={styles.textTitle}>Currency converter</Text>
+      <Text>{"\n"}From</Text>
       <DropDown
-        selectValue={baseCurrency}
+        selectValue={fromCurrency}
         data={currencyList}
-        oneSelect={selectedBaseCurr}
+        oneSelect={selectedFromCurrency}
       />
-      <Text>Currency </Text>
+      <Text>{"\n"}To</Text>
       <DropDown
-        selectValue={convCurrency}
+        selectValue={toCurrency}
         data={currencyList}
-        oneSelect={selectedConvCurr}
+        oneSelect={selectedToCurrency}
       />
-      <Text>Amount</Text>
+      <Text>
+        {"\n"}
+        {titleAmount}
+      </Text>
       <SafeAreaView>
         <TextInput
           style={styles.input}
@@ -157,17 +170,23 @@ export default function App() {
           keyboardType="numeric"
         />
       </SafeAreaView>
+      <Text>{"\n"}</Text>
       <MyButton
-        title="Converter"
+        title="Convert"
         buttonStyles={styles.buttonStyle}
-        textStyles={styles.text}
+        textStyles={styles.textBtn}
         onPress={() => {
           calculate();
         }}
       />
-      <Text>{convertedDate} </Text>
-      <Text>{convertedAmount} </Text>
-      {/* <Modal active={modalActive} setActive={setModalActive} /> */}
+      <Text>
+        {"\n"}
+        {convertedDate}{" "}
+      </Text>
+      <Text style={styles.textResult}>
+        {"\n"}
+        {convertedAmount}{" "}
+      </Text>
     </View>
   );
 }
@@ -179,13 +198,18 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  textTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "blue",
+  },
   buttonStyle: {
-    color: "#fff",
-    backgroundColor: "gray",
+    color: "black",
+    backgroundColor: "green",
     fontWeight: "bold",
   },
-  text: {
-    color: "yellow",
+  textBtn: {
+    color: "white",
   },
   input: {
     minHeight: 40,
@@ -196,5 +220,10 @@ const styles = StyleSheet.create({
     width: 200,
     padding: 5,
     borderWidth: 1,
+  },
+  textResult: {
+    fontSize: 14,
+    fontWeight: "bold",
+    color: "navy",
   },
 });
