@@ -16,6 +16,7 @@ export const useGetExchangeRate = (
   );
   const [isLoading, setLoading] = useState(true);
   const [numberExchangeRate, setNumberExchangeRate] = useState();
+  const [runHookGetExchangeRate, setRunHookGetExchangeRate] = useState(false);
 
   const getExchangeRate = async () => {
     if (dataFromCurrency && dataToCurrency)
@@ -36,6 +37,8 @@ export const useGetExchangeRate = (
         );
         const json = await response.json();
         setNumberExchangeRate(json.data[`${dataToCurrency.key}`]["value"]);
+        setRunHookGetExchangeRate(!runHookGetExchangeRate);
+        // return json.data[`${dataToCurrency.key}`]["value"];
       } catch (error) {
         console.error(error);
       } finally {
@@ -43,5 +46,5 @@ export const useGetExchangeRate = (
       }
   };
 
-  return { getExchangeRate, numberExchangeRate };
+  return { getExchangeRate, numberExchangeRate, runHookGetExchangeRate };
 };

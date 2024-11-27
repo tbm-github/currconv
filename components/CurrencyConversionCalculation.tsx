@@ -19,10 +19,8 @@ const CurrencyConversionCalculation = ({
   onConvertedDate,
   onConvertedAmount,
 }: Props) => {
-  const { getExchangeRate, numberExchangeRate } = useGetExchangeRate(
-    fromCurrency,
-    toCurrency
-  );
+  const { getExchangeRate, numberExchangeRate, runHookGetExchangeRate } =
+    useGetExchangeRate(fromCurrency, toCurrency);
   const putDataAsyncStorage = async (resultData: object) => {
     try {
       const jsonValue = JSON.stringify(resultData);
@@ -44,9 +42,11 @@ const CurrencyConversionCalculation = ({
 
   useEffect(() => {
     calculateSave();
-  }, [numberExchangeRate]);
+  }, [runHookGetExchangeRate]);
   const startCalculate = () => {
-    if (fromCurrency && toCurrency && value) getExchangeRate();
+    if (fromCurrency && toCurrency && value) {
+      getExchangeRate();
+    }
   };
 
   const calculateSave = () => {
