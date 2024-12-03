@@ -5,6 +5,13 @@ import { useGetExchangeRate } from "../useGetExchangeRate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
+type itemDataHistoryCurrencyConverion = {
+  fromCurrency: FilterOption | null;
+  toCurrency: FilterOption | null;
+  value: string;
+  dateStr: string;
+  result: string;
+};
 type Props = {
   fromCurrency: FilterOption | null;
   toCurrency: FilterOption | null;
@@ -19,12 +26,26 @@ const CurrencyConversionCalculation = ({
   onConvertedDate,
   onConvertedAmount,
 }: Props) => {
+  const [
+    arrayDataHistoryCurrencyConverion,
+    setArrayDataHistoryCurrencyConverion,
+  ] = useState<itemDataHistoryCurrencyConverion[]>([]);
   const { getExchangeRate, numberExchangeRate, runHookGetExchangeRate } =
     useGetExchangeRate(fromCurrency, toCurrency);
   const putDataAsyncStorage = async (resultData: object) => {
     try {
       const jsonValue = JSON.stringify(resultData);
       await AsyncStorage.setItem("UID001", jsonValue);
+    } catch (e) {
+      // saving error
+    }
+  };
+  const putDataHistoryCurrencyConverionAsyncStorage = async (
+    resultDataHistoryCurrencyConverion: object
+  ) => {
+    try {
+      const jsonValue = JSON.stringify(resultDataHistoryCurrencyConverion);
+      await AsyncStorage.setItem("HistoryCurrencyConverion", jsonValue);
     } catch (e) {
       // saving error
     }
@@ -38,6 +59,17 @@ const CurrencyConversionCalculation = ({
       result,
     };
     putDataAsyncStorage(resultData);
+    arrayDataHistoryCurrencyConverion.push(resultData);
+    console.log(
+      "arrayDataHistoryCurrencyConverion = ",
+      arrayDataHistoryCurrencyConverion
+    );
+    arrayDataHistoryCurrencyConverion.map((itemDataHistory) =>
+      console.log(itemDataHistory)
+    );
+    putDataHistoryCurrencyConverionAsyncStorage(
+      arrayDataHistoryCurrencyConverion
+    );
   };
 
   useEffect(() => {
@@ -63,6 +95,22 @@ const CurrencyConversionCalculation = ({
       }
     }
   };
+
+  const getDataHistoryCurrencyConverionAsyncStorage = async () => {
+    try {
+      const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConverion");
+      if (jsonRes) {
+        const resultDataArray = JSON.parse(jsonRes);
+        setArrayDataHistoryCurrencyConverion(resultDataArray);
+      }
+    } catch (e) {
+      // error reading value
+      console.log("Not HistoryCurrencyConverion in AsyncStorage");
+    }
+  };
+  useEffect(() => {
+    getDataHistoryCurrencyConverionAsyncStorage();
+  }, []);
   return (
     <MyButton
       title="Convert"
