@@ -31,11 +31,11 @@ const CurrencyConversionCalculation = ({
   };
   const saveAsyncStorage = (dateStr: string, result: string) => {
     const resultData = {
-      fromCurrencyS: { fromCurrency },
-      toCurrencyS: { toCurrency },
-      numberS: { value },
-      convertedDateS: { dateStr },
-      resultS: { result },
+      fromCurrency,
+      toCurrency,
+      value,
+      dateStr,
+      result,
     };
     putDataAsyncStorage(resultData);
   };

@@ -57,20 +57,19 @@ export default function App() {
       const jsonRes = await AsyncStorage.getItem("UID001");
       if (jsonRes) {
         const resultData = JSON.parse(jsonRes);
-        setFromCurrency(resultData["fromCurrencyS"]["fromCurrency"]);
+        setFromCurrency(resultData["fromCurrency"]);
+        console.log("resultData = ", resultData);
         setTitleAmount(
-          "Amount (" +
-            `${resultData["fromCurrencyS"]["fromCurrency"]["key"]}` +
-            ")"
+          "Amount (" + `${resultData["fromCurrency"]["key"]}` + ")"
         );
-        setToCurrency(resultData["toCurrencyS"]["toCurrency"]);
-        setNumber(resultData["numberS"]["value"]);
-        setConvertedDate(resultData["convertedDateS"]["dateStr"]);
+        setToCurrency(resultData["toCurrency"]);
+        setNumber(resultData["value"]);
+        setConvertedDate(resultData["dateStr"]);
         setConvertedAmount(
           "Result: " +
-            `${resultData["resultS"]["result"]}` +
+            `${resultData["result"]}` +
             " (" +
-            `${resultData["toCurrencyS"]["toCurrency"]["key"]}` +
+            `${resultData["toCurrency"]["key"]}` +
             ")"
         );
       }
