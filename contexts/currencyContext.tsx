@@ -1,17 +1,10 @@
 import React, { createContext, useState } from "react";
-import { FilterOption } from "../config/types";
+import { FilterOption, ContextType } from "../config/types";
 
 // import { BarButton, BottomBarContextType } from "./types";
 
 type Props = {
   children: React.ReactNode;
-};
-
-type ContextType = {
-  fromCurrency: FilterOption | null;
-  setFromCurrency: Function;
-  toCurrency: FilterOption | null;
-  setToCurrency: Function;
 };
 
 const initialState: ContextType = {

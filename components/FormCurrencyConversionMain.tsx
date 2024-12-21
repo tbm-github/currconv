@@ -141,8 +141,8 @@ export const FormCurrencyConversionMain = () => {
       </SafeAreaView>
       <Text>{"\n"}</Text>
       <CurrencyConversionCalculation
-        fromCurrency={fromCurrency}
-        toCurrency={toCurrency}
+        // fromCurrency={fromCurrency}
+        // toCurrency={toCurrency}
         value={number}
         onConvertedDate={setConvertedDate}
         onConvertedAmount={setConvertedAmount}

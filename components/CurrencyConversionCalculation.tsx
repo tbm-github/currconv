@@ -3,7 +3,8 @@ import MyButton from "./MyButton";
 import { FilterOption } from "../config/types";
 import { useGetExchangeRate } from "../useGetExchangeRate";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { CurrencyContext } from "../contexts/currencyContext";
 
 type itemDataHistoryCurrencyConverion = {
   fromCurrency: FilterOption | null;
@@ -13,25 +14,23 @@ type itemDataHistoryCurrencyConverion = {
   result: string;
 };
 type Props = {
-  fromCurrency: FilterOption | null;
-  toCurrency: FilterOption | null;
   value: string;
   onConvertedDate: (val: string) => void;
   onConvertedAmount: (val: string) => void;
 };
 const CurrencyConversionCalculation = ({
-  fromCurrency,
-  toCurrency,
   value,
   onConvertedDate,
   onConvertedAmount,
 }: Props) => {
+  const { fromCurrency, toCurrency } = useContext(CurrencyContext);
+
   const [
     arrayDataHistoryCurrencyConverion,
     setArrayDataHistoryCurrencyConverion,
   ] = useState<itemDataHistoryCurrencyConverion[]>([]);
-  const { getExchangeRate, numberExchangeRate, runHookGetExchangeRate } =
-    useGetExchangeRate(fromCurrency, toCurrency);
+
+  const { getExchangeRate } = useGetExchangeRate();
   const putDataAsyncStorage = async (resultData: object) => {
     try {
       const jsonValue = JSON.stringify(resultData);
@@ -72,20 +71,18 @@ const CurrencyConversionCalculation = ({
     );
   };
 
-  useEffect(() => {
-    calculateSave();
-  }, [runHookGetExchangeRate]);
   const startCalculate = () => {
     if (fromCurrency && toCurrency && value) {
-      getExchangeRate();
+      getExchangeRate().then((rate: number) => {
+        calculateSave(rate);
+      });
     }
   };
 
-  const calculateSave = () => {
-    if (value != "" && !(typeof numberExchangeRate === "undefined")) {
+  const calculateSave = (rate: number) => {
+    if (value != "" && rate) {
       if (toCurrency) {
-        // const result = +number * data[`${toCurrency.key}`]["value"];
-        const result = +value * numberExchangeRate;
+        const result = +value * rate;
         var convDate = new Date();
         saveAsyncStorage(convDate.toString(), result.toFixed(2));
         onConvertedDate(convDate.toString());

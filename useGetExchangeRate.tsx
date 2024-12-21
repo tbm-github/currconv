@@ -1,33 +1,22 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { API_KEY } from "@env";
-import { FilterOption } from "./config/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { CurrencyContext } from "./contexts/currencyContext";
 
-export const useGetExchangeRate = (
-  dataFromCurrency: FilterOption | null,
-  dataToCurrency: FilterOption | null
-) => {
+export const useGetExchangeRate = () => {
+  const { fromCurrency, toCurrency } = useContext(CurrencyContext);
   const urlConvCurrencies = "https://api.currencyapi.com/v3/latest";
-  const [fromCurrency, setFromCurrency] = useState<FilterOption | null>(
-    dataFromCurrency
-  );
-  const [toCurrency, setToCurrency] = useState<FilterOption | null>(
-    dataToCurrency
-  );
   const [isLoading, setLoading] = useState(true);
-  const [numberExchangeRate, setNumberExchangeRate] = useState();
-  const [runHookGetExchangeRate, setRunHookGetExchangeRate] = useState(false);
 
   const getExchangeRate = async () => {
-    if (dataFromCurrency && dataToCurrency)
+    if (fromCurrency && toCurrency)
       try {
         setLoading(true);
         const response = await fetch(
           urlConvCurrencies +
             "?base_currency=" +
-            `${dataFromCurrency.key}` +
+            `${fromCurrency.key}` +
             "&currencies=" +
-            `${dataToCurrency.key}`,
+            `${toCurrency.key}`,
           {
             method: "GET",
             headers: {
@@ -36,9 +25,7 @@ export const useGetExchangeRate = (
           }
         );
         const json = await response.json();
-        setNumberExchangeRate(json.data[`${dataToCurrency.key}`]["value"]);
-        setRunHookGetExchangeRate(!runHookGetExchangeRate);
-        // return json.data[`${dataToCurrency.key}`]["value"];
+        return json.data[`${toCurrency.key}`]["value"];
       } catch (error) {
         console.error(error);
       } finally {
@@ -46,5 +33,5 @@ export const useGetExchangeRate = (
       }
   };
 
-  return { getExchangeRate, numberExchangeRate, runHookGetExchangeRate };
+  return { getExchangeRate };
 };
