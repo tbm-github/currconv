@@ -29,8 +29,6 @@ export function useCurrencies() {
         method: "GET",
         headers: {
           apikey: `${API_KEY}`,
-          // "cur_live_pzaSuuuoSWQrHo5MKykAsjnDjTgd3kHlXblNrOkj",
-          // apikey: "cur_live_EPhQajklAhcd3Xbc8MihbSuQnyn8tyA73rDEU0lB",
         },
       });
       const json = await response.json();
@@ -55,6 +53,6 @@ export function useCurrencies() {
       return a.value > b.value ? 1 : -1;
     });
   }
-
+  // console.log("API_KEY=" + `${API_KEY}`);
   return currencyList;
 }

@@ -32,6 +32,6 @@ export const useGetExchangeRate = () => {
         setLoading(false);
       }
   };
-
+  // console.log("API_KEY=" + `${API_KEY}`);
   return { getExchangeRate };
 };

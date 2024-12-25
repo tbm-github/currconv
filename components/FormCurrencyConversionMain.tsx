@@ -1,13 +1,20 @@
 import { TextInput, SafeAreaView, StyleSheet, Text, View } from "react-native";
 import { useContext, useEffect, useReducer, useState } from "react";
 import { API_KEY } from "@env";
-import { FilterOption } from "../config/types";
+import {
+  FilterOption,
+  itemDataCurrencyConversion,
+  itemHistory,
+} from "../config/types";
 import { DropDown } from "./DropDown";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCurrencies } from "../useCurrencies";
 import { useGetExchangeRate } from "../useGetExchangeRate";
 import CurrencyConversionCalculation from "./CurrencyConversionCalculation";
-import { CurrencyContext } from "../contexts/currencyContext";
+import {
+  CurrencyContext,
+  HistoryConversionContext,
+} from "../contexts/currencyContext";
 
 type itemDataConversion = {
   fromCurrency: FilterOption | null;
@@ -35,10 +42,10 @@ export const FormCurrencyConversionMain = () => {
   //     initialConversion
   //   );
   const [isLoading, setLoading] = useState(true);
-  // const [fromCurrency, setFromCurrency] = useState<FilterOption | null>(null);
-  // const [toCurrency, setToCurrency] = useState<FilterOption | null>(null);
   const { fromCurrency, setFromCurrency, toCurrency, setToCurrency } =
     useContext(CurrencyContext);
+  const { arrayDataHistoryCurrencyConversion, handleAddItemConversion } =
+    useContext(HistoryConversionContext);
 
   const [number, setNumber] = useState("");
   // const [numberExchangeRate, setNumberExchangeRate] = useState("");
@@ -46,13 +53,11 @@ export const FormCurrencyConversionMain = () => {
   const [convertedAmount, setConvertedAmount] = useState("");
   const [titleAmount, setTitleAmount] = useState("Amount");
 
-  //  const urlDataCurrencies = "https://api.currencyapi.com/v3/currencies";
   const urlConvCurrencies = "https://api.currencyapi.com/v3/latest";
-  // const { currencies, isLoadingCurr } = useCurrencies(); // Hook
-  // const { currencies, isLoadingCurr } = useExchCurrencies(); // Hook
 
   useEffect(() => {
     getDataAsyncStorage();
+    getHistoryAsyncStorage();
   }, []);
 
   const currencyList = useCurrencies();
@@ -84,7 +89,6 @@ export const FormCurrencyConversionMain = () => {
       if (jsonRes) {
         const resultData = JSON.parse(jsonRes);
         setFromCurrency(resultData["fromCurrency"]);
-        console.log("resultData = ", resultData);
         setTitleAmount(
           "Amount (" + `${resultData["fromCurrency"]["key"]}` + ")"
         );
@@ -105,12 +109,27 @@ export const FormCurrencyConversionMain = () => {
     }
   };
 
+  const getHistoryAsyncStorage = async () => {
+    try {
+      const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConverion");
+      if (jsonRes) {
+        const resultData = JSON.parse(jsonRes);
+        resultData.map((itemDataHistory: itemDataCurrencyConversion) => {
+          console.log("itemDataHistory", itemDataHistory);
+          handleAddItemConversion(itemDataHistory);
+        });
+      }
+    } catch (e) {
+      // error reading value
+      console.log("Not AsyncStorage");
+    }
+  };
+
   useEffect(() => {
     setConvertedDate("");
     setConvertedAmount("");
   }, [fromCurrency, toCurrency, number]);
-  //   const { fromCurrency, toCurrency, setFromCurrency, setToCurrency } =
-  //     useContext(CurrencyContext);
+
   return (
     <View style={styles.container}>
       <Text style={styles.textTitle}>Currency Converter</Text>
@@ -141,8 +160,6 @@ export const FormCurrencyConversionMain = () => {
       </SafeAreaView>
       <Text>{"\n"}</Text>
       <CurrencyConversionCalculation
-        // fromCurrency={fromCurrency}
-        // toCurrency={toCurrency}
         value={number}
         onConvertedDate={setConvertedDate}
         onConvertedAmount={setConvertedAmount}

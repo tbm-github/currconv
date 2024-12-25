@@ -1,20 +1,34 @@
-import React, { createContext, useState } from "react";
-import { FilterOption, ContextType } from "../config/types";
-
-// import { BarButton, BottomBarContextType } from "./types";
+import React, { createContext, useEffect, useState } from "react";
+import {
+  FilterOption,
+  CurrencyContextType,
+  itemDataCurrencyConversion,
+  HistoryContextType,
+  itemHistory,
+} from "../config/types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
   children: React.ReactNode;
 };
 
-const initialState: ContextType = {
+const initialCurrencyState: CurrencyContextType = {
   fromCurrency: null,
   setFromCurrency: () => {},
   toCurrency: null,
   setToCurrency: () => {},
 };
 
-export const CurrencyContext = createContext(initialState);
+export const CurrencyContext = createContext(initialCurrencyState);
+
+const initialHistoryConversionState: HistoryContextType = {
+  arrayDataHistoryCurrencyConversion: [],
+  handleAddItemConversion: () => {},
+};
+
+export const HistoryConversionContext = createContext(
+  initialHistoryConversionState
+);
 
 export function CurrencyProvider({ children }: Props) {
   const [fromCurrency, setFromCurrency] = useState<FilterOption | null>(null);
@@ -27,9 +41,28 @@ export function CurrencyProvider({ children }: Props) {
     setToCurrency,
   };
 
+  const [
+    arrayDataHistoryCurrencyConversion,
+    setArrayDataHistoryCurrencyConversion,
+  ] = useState<itemDataCurrencyConversion[]>([]);
+
+  const handleAddItemConversion = (item: itemDataCurrencyConversion) => {
+    setArrayDataHistoryCurrencyConversion([
+      ...arrayDataHistoryCurrencyConversion,
+      item,
+    ]);
+  };
+
+  const contextHistoryValue = {
+    arrayDataHistoryCurrencyConversion,
+    handleAddItemConversion,
+  };
+
   return (
     <CurrencyContext.Provider value={contextValue}>
-      {children}
+      <HistoryConversionContext.Provider value={contextHistoryValue}>
+        {children}
+      </HistoryConversionContext.Provider>
     </CurrencyContext.Provider>
   );
 }
