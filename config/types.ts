@@ -21,6 +21,8 @@ export type itemDataCurrencyConversion = {
 export type itemHistory = { text: string };
 
 export type HistoryContextType = {
+  saveHistory: boolean;
+  setSaveHistory: Function;
   arrayDataHistoryCurrencyConversion: itemDataCurrencyConversion[];
   handleAddItemConversion: Function;
 };

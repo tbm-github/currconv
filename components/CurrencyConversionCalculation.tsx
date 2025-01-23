@@ -9,7 +9,7 @@ import {
   HistoryConversionContext,
 } from "../contexts/currencyContext";
 
-// type itemDataHistoryCurrencyConverion = {
+// type itemDataHistoryCurrencyConversion = {
 //   fromCurrency: FilterOption | null;
 //   toCurrency: FilterOption | null;
 //   value: string;
@@ -27,8 +27,12 @@ const CurrencyConversionCalculation = ({
   onConvertedAmount,
 }: Props) => {
   const { fromCurrency, toCurrency } = useContext(CurrencyContext);
-  const { arrayDataHistoryCurrencyConversion, handleAddItemConversion } =
-    useContext(HistoryConversionContext);
+  const {
+    saveHistory,
+    setSaveHistory,
+    arrayDataHistoryCurrencyConversion,
+    handleAddItemConversion,
+  } = useContext(HistoryConversionContext);
 
   const { getExchangeRate } = useGetExchangeRate();
 
@@ -50,38 +54,43 @@ const CurrencyConversionCalculation = ({
       result,
     };
 
-    putDataAsyncStorage(resultData);
+    // putDataAsyncStorage(resultData);
     handleAddItemConversion(resultData);
-    putDataHistoryCurrencyConverionAsyncStorage(
-      arrayDataHistoryCurrencyConversion
-    );
-    console.log("HistoryCurrencyConverion", arrayDataHistoryCurrencyConversion);
+    putDataHistoryCurrencyConversionAsyncStorage([
+      resultData,
+      ...arrayDataHistoryCurrencyConversion,
+    ]);
   };
 
-  const putDataHistoryCurrencyConverionAsyncStorage = async (
-    resultDataHistoryCurrencyConverion: object
+  const putDataHistoryCurrencyConversionAsyncStorage = async (
+    resultDataHistoryCurrencyConversion: object
   ) => {
     try {
-      const jsonValue = JSON.stringify(resultDataHistoryCurrencyConverion);
-      await AsyncStorage.setItem("HistoryCurrencyConverion", jsonValue);
+      const jsonValue = JSON.stringify(resultDataHistoryCurrencyConversion);
+      await AsyncStorage.setItem("HistoryCurrencyConversion", jsonValue);
       console.log(
-        "putDataHistoryCurrencyConverionAsyncStorage",
-        resultDataHistoryCurrencyConverion
+        "putDataHistoryCurrencyConversionAsyncStorage",
+        resultDataHistoryCurrencyConversion
       );
     } catch (e) {
       // saving error
     }
   };
 
-  // useEffect(() => {
-  //   putDataHistoryCurrencyConverionAsyncStorage(
-  //     arrayDataHistoryCurrencyConversion
-  //   );
-  //   console.log("HistoryCurrencyConverion", arrayDataHistoryCurrencyConversion);
-  // }, [arrayDataHistoryCurrencyConversion]);
+  useEffect(() => {
+    if (saveHistory)
+      putDataHistoryCurrencyConversionAsyncStorage(
+        arrayDataHistoryCurrencyConversion
+      );
+    console.log(
+      "HistoryCurrencyConversion",
+      arrayDataHistoryCurrencyConversion
+    );
+  }, [arrayDataHistoryCurrencyConversion]);
 
   const startCalculate = () => {
     if (fromCurrency && toCurrency && value) {
+      setSaveHistory(true);
       getExchangeRate().then((rate: number) => {
         calculateSave(rate);
       });
@@ -102,20 +111,20 @@ const CurrencyConversionCalculation = ({
     }
   };
 
-  //   const getDataHistoryCurrencyConverionAsyncStorage = async () => {
+  //   const getDataHistoryCurrencyConversionAsyncStorage = async () => {
   //     try {
-  //       const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConverion");
+  //       const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConversion");
   //       if (jsonRes) {
   //         const resultDataArray = JSON.parse(jsonRes);
-  //         setArrayDataHistoryCurrencyConverion(resultDataArray);
+  //         setArrayDataHistoryCurrencyConversion(resultDataArray);
   //       }
   //     } catch (e) {
   //       // error reading value
-  //       console.log("Not HistoryCurrencyConverion in AsyncStorage");
+  //       console.log("Not HistoryCurrencyConversion in AsyncStorage");
   //     }
   //   };
   //   useEffect(() => {
-  //     getDataHistoryCurrencyConverionAsyncStorage();
+  //     getDataHistoryCurrencyConversionAsyncStorage();
   //   }, []);
   return (
     <MyButton

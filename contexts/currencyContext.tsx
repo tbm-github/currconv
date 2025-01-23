@@ -22,6 +22,8 @@ const initialCurrencyState: CurrencyContextType = {
 export const CurrencyContext = createContext(initialCurrencyState);
 
 const initialHistoryConversionState: HistoryContextType = {
+  saveHistory: false,
+  setSaveHistory: () => {},
   arrayDataHistoryCurrencyConversion: [],
   handleAddItemConversion: () => {},
 };
@@ -41,6 +43,8 @@ export function CurrencyProvider({ children }: Props) {
     setToCurrency,
   };
 
+  const [saveHistory, setSaveHistory] = useState(false);
+
   const [
     arrayDataHistoryCurrencyConversion,
     setArrayDataHistoryCurrencyConversion,
@@ -48,12 +52,22 @@ export function CurrencyProvider({ children }: Props) {
 
   const handleAddItemConversion = (item: itemDataCurrencyConversion) => {
     setArrayDataHistoryCurrencyConversion([
-      ...arrayDataHistoryCurrencyConversion,
       item,
+      ...arrayDataHistoryCurrencyConversion,
     ]);
+    console.log(
+      "arrayDataHistoryCurrencyConversion",
+      arrayDataHistoryCurrencyConversion
+    );
+    console.log(
+      "arrayDataHistoryCurrencyConversion[0]",
+      arrayDataHistoryCurrencyConversion[0]
+    );
   };
 
   const contextHistoryValue = {
+    saveHistory,
+    setSaveHistory,
     arrayDataHistoryCurrencyConversion,
     handleAddItemConversion,
   };

@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCurrencies } from "../useCurrencies";
 import { useGetExchangeRate } from "../useGetExchangeRate";
 import CurrencyConversionCalculation from "./CurrencyConversionCalculation";
+import ClearAsyncStorage from "./ClearAsyncStorage";
 import {
   CurrencyContext,
   HistoryConversionContext,
@@ -57,7 +58,7 @@ export const FormCurrencyConversionMain = () => {
 
   useEffect(() => {
     getDataAsyncStorage();
-    getHistoryAsyncStorage();
+    // getHistoryAsyncStorage();
   }, []);
 
   const currencyList = useCurrencies();
@@ -85,23 +86,25 @@ export const FormCurrencyConversionMain = () => {
 
   const getDataAsyncStorage = async () => {
     try {
-      const jsonRes = await AsyncStorage.getItem("UID001");
+      //const jsonRes = await AsyncStorage.getItem("UID001");
+      const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConversion");
       if (jsonRes) {
         const resultData = JSON.parse(jsonRes);
-        setFromCurrency(resultData["fromCurrency"]);
+        setFromCurrency(resultData[0]["fromCurrency"]);
         setTitleAmount(
-          "Amount (" + `${resultData["fromCurrency"]["key"]}` + ")"
+          "Amount (" + `${resultData[0]["fromCurrency"]["key"]}` + ")"
         );
-        setToCurrency(resultData["toCurrency"]);
-        setNumber(resultData["value"]);
-        setConvertedDate(resultData["dateStr"]);
+        setToCurrency(resultData[0]["toCurrency"]);
+        setNumber(resultData[0]["value"]);
+        setConvertedDate(resultData[0]["dateStr"]);
         setConvertedAmount(
           "Result: " +
-            `${resultData["result"]}` +
+            `${resultData[0]["result"]}` +
             " (" +
-            `${resultData["toCurrency"]["key"]}` +
+            `${resultData[0]["toCurrency"]["key"]}` +
             ")"
         );
+        handleAddItemConversion(resultData);
       }
     } catch (e) {
       // error reading value
@@ -114,10 +117,9 @@ export const FormCurrencyConversionMain = () => {
       const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConverion");
       if (jsonRes) {
         const resultData = JSON.parse(jsonRes);
-        resultData.map((itemDataHistory: itemDataCurrencyConversion) => {
-          console.log("itemDataHistory", itemDataHistory);
-          handleAddItemConversion(itemDataHistory);
-        });
+        console.log("resultData", resultData);
+        console.log("resultData[0]", resultData[0]);
+        handleAddItemConversion(resultData);
       }
     } catch (e) {
       // error reading value
@@ -170,8 +172,9 @@ export const FormCurrencyConversionMain = () => {
       </Text>
       <Text style={styles.textResult}>
         {"\n"}
-        {convertedAmount}{" "}
+        {convertedAmount} {"\n"}
       </Text>
+      <ClearAsyncStorage />
     </View>
   );
 };
