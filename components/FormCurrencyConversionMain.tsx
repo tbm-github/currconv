@@ -38,18 +38,16 @@ type ActionAmount = {
 type ActionTypes = ActionSelectCurrency | ActionChangeValue | ActionAmount;
 
 export const FormCurrencyConversionMain = () => {
-  //   const [dataConversion, dispatch] = useReducer(
-  //     conversionReducer,
-  //     initialConversion
-  //   );
   const [isLoading, setLoading] = useState(true);
   const { fromCurrency, setFromCurrency, toCurrency, setToCurrency } =
     useContext(CurrencyContext);
-  const { arrayDataHistoryCurrencyConversion, handleAddItemConversion } =
-    useContext(HistoryConversionContext);
+  const {
+    // arrayDataHistoryCurrencyConversion,
+    handleAddItemConversion,
+    handleCreateConversion,
+  } = useContext(HistoryConversionContext);
 
   const [number, setNumber] = useState("");
-  // const [numberExchangeRate, setNumberExchangeRate] = useState("");
   const [convertedDate, setConvertedDate] = useState("");
   const [convertedAmount, setConvertedAmount] = useState("");
   const [titleAmount, setTitleAmount] = useState("Amount");
@@ -58,7 +56,6 @@ export const FormCurrencyConversionMain = () => {
 
   useEffect(() => {
     getDataAsyncStorage();
-    // getHistoryAsyncStorage();
   }, []);
 
   const currencyList = useCurrencies();
@@ -104,22 +101,7 @@ export const FormCurrencyConversionMain = () => {
             `${resultData[0]["toCurrency"]["key"]}` +
             ")"
         );
-        handleAddItemConversion(resultData);
-      }
-    } catch (e) {
-      // error reading value
-      console.log("Not AsyncStorage");
-    }
-  };
-
-  const getHistoryAsyncStorage = async () => {
-    try {
-      const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConverion");
-      if (jsonRes) {
-        const resultData = JSON.parse(jsonRes);
-        console.log("resultData", resultData);
-        console.log("resultData[0]", resultData[0]);
-        handleAddItemConversion(resultData);
+        handleCreateConversion(resultData);
       }
     } catch (e) {
       // error reading value

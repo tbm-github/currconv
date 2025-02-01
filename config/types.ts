@@ -25,4 +25,5 @@ export type HistoryContextType = {
   setSaveHistory: Function;
   arrayDataHistoryCurrencyConversion: itemDataCurrencyConversion[];
   handleAddItemConversion: Function;
+  handleCreateConversion: Function;
 };

@@ -9,13 +9,6 @@ import {
   HistoryConversionContext,
 } from "../contexts/currencyContext";
 
-// type itemDataHistoryCurrencyConversion = {
-//   fromCurrency: FilterOption | null;
-//   toCurrency: FilterOption | null;
-//   value: string;
-//   dateStr: string;
-//   result: string;
-// };
 type Props = {
   value: string;
   onConvertedDate: (val: string) => void;
@@ -68,10 +61,10 @@ const CurrencyConversionCalculation = ({
     try {
       const jsonValue = JSON.stringify(resultDataHistoryCurrencyConversion);
       await AsyncStorage.setItem("HistoryCurrencyConversion", jsonValue);
-      console.log(
-        "putDataHistoryCurrencyConversionAsyncStorage",
-        resultDataHistoryCurrencyConversion
-      );
+      // console.log(
+      //   "putDataHistoryCurrencyConversionAsyncStorage",
+      //   resultDataHistoryCurrencyConversion
+      // );
     } catch (e) {
       // saving error
     }
@@ -82,10 +75,6 @@ const CurrencyConversionCalculation = ({
       putDataHistoryCurrencyConversionAsyncStorage(
         arrayDataHistoryCurrencyConversion
       );
-    console.log(
-      "HistoryCurrencyConversion",
-      arrayDataHistoryCurrencyConversion
-    );
   }, [arrayDataHistoryCurrencyConversion]);
 
   const startCalculate = () => {
@@ -111,21 +100,6 @@ const CurrencyConversionCalculation = ({
     }
   };
 
-  //   const getDataHistoryCurrencyConversionAsyncStorage = async () => {
-  //     try {
-  //       const jsonRes = await AsyncStorage.getItem("HistoryCurrencyConversion");
-  //       if (jsonRes) {
-  //         const resultDataArray = JSON.parse(jsonRes);
-  //         setArrayDataHistoryCurrencyConversion(resultDataArray);
-  //       }
-  //     } catch (e) {
-  //       // error reading value
-  //       console.log("Not HistoryCurrencyConversion in AsyncStorage");
-  //     }
-  //   };
-  //   useEffect(() => {
-  //     getDataHistoryCurrencyConversionAsyncStorage();
-  //   }, []);
   return (
     <MyButton
       title="Convert"

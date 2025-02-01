@@ -6,7 +6,7 @@ import {
   HistoryContextType,
   itemHistory,
 } from "../config/types";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+// import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type Props = {
   children: React.ReactNode;
@@ -26,6 +26,7 @@ const initialHistoryConversionState: HistoryContextType = {
   setSaveHistory: () => {},
   arrayDataHistoryCurrencyConversion: [],
   handleAddItemConversion: () => {},
+  handleCreateConversion: () => {},
 };
 
 export const HistoryConversionContext = createContext(
@@ -55,14 +56,9 @@ export function CurrencyProvider({ children }: Props) {
       item,
       ...arrayDataHistoryCurrencyConversion,
     ]);
-    console.log(
-      "arrayDataHistoryCurrencyConversion",
-      arrayDataHistoryCurrencyConversion
-    );
-    console.log(
-      "arrayDataHistoryCurrencyConversion[0]",
-      arrayDataHistoryCurrencyConversion[0]
-    );
+  };
+  const handleCreateConversion = (arr: itemDataCurrencyConversion[]) => {
+    setArrayDataHistoryCurrencyConversion(arr);
   };
 
   const contextHistoryValue = {
@@ -70,6 +66,7 @@ export function CurrencyProvider({ children }: Props) {
     setSaveHistory,
     arrayDataHistoryCurrencyConversion,
     handleAddItemConversion,
+    handleCreateConversion,
   };
 
   return (
@@ -80,30 +77,3 @@ export function CurrencyProvider({ children }: Props) {
     </CurrencyContext.Provider>
   );
 }
-
-// const initialState: BottomBarContextType = {
-//   buttons: [],
-//   setButtons: () => {},
-//   hideBottomBar: () => {},
-// };
-
-// export const BottomBarContext =
-//   createContext<BottomBarContextType>(initialState);
-
-// export function BottomBarProvider({ children }: Props) {
-//   const [buttons, setButtons] = useState<BarButton[]>([]);
-
-//   const hideBottomBar = () => setButtons([]);
-
-//   const contextValue = { buttons, setButtons, hideBottomBar };
-
-//   return (
-//     <BottomBarContext.Provider value={contextValue}>
-//       {children}
-//     </BottomBarContext.Provider>
-//   );
-// }
-
-// export function useBottomBar() {
-//   return useContext(BottomBarContext);
-// }
