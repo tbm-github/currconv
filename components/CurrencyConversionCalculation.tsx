@@ -75,6 +75,7 @@ const CurrencyConversionCalculation = ({
       putDataHistoryCurrencyConversionAsyncStorage(
         arrayDataHistoryCurrencyConversion
       );
+    if (saveHistory) console.log("History", arrayDataHistoryCurrencyConversion);
   }, [arrayDataHistoryCurrencyConversion]);
 
   const startCalculate = () => {

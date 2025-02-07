@@ -11,11 +11,14 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useCurrencies } from "../useCurrencies";
 import { useGetExchangeRate } from "../useGetExchangeRate";
 import CurrencyConversionCalculation from "./CurrencyConversionCalculation";
-import ClearAsyncStorage from "./ClearAsyncStorage";
 import {
   CurrencyContext,
   HistoryConversionContext,
 } from "../contexts/currencyContext";
+import { Link } from "expo-router";
+import { FlatListHistory } from "./FlatListHistory";
+import { Button } from "@rneui/base";
+import { router } from "expo-router";
 
 type itemDataConversion = {
   fromCurrency: FilterOption | null;
@@ -156,7 +159,13 @@ export const FormCurrencyConversionMain = () => {
         {"\n"}
         {convertedAmount} {"\n"}
       </Text>
-      <ClearAsyncStorage />
+
+      <Text style={styles.buttonStyle}>
+        <Link href={{ pathname: "history", params: { name: "History" } }}>
+          Go to History
+        </Link>
+      </Text>
+      <Button title="History" onPress={() => router.navigate("/history")} />
     </View>
   );
 };
@@ -179,8 +188,8 @@ const styles = StyleSheet.create({
     color: "blue",
   },
   buttonStyle: {
-    color: "black",
-    backgroundColor: "green",
+    color: "white",
+    backgroundColor: "gray",
     fontWeight: "bold",
   },
   textBtn: {
