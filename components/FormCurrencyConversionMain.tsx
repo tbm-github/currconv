@@ -160,12 +160,12 @@ export const FormCurrencyConversionMain = () => {
         {convertedAmount} {"\n"}
       </Text>
 
-      <Text style={styles.buttonStyle}>
+      {/* <Text style={styles.buttonStyle}>
         <Link href={{ pathname: "history", params: { name: "History" } }}>
           Go to History
         </Link>
       </Text>
-      <Button title="History" onPress={() => router.navigate("/history")} />
+      <Button title="History" onPress={() => router.navigate("/history")} /> */}
     </View>
   );
 };

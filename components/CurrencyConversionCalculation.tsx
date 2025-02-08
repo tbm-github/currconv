@@ -61,10 +61,6 @@ const CurrencyConversionCalculation = ({
     try {
       const jsonValue = JSON.stringify(resultDataHistoryCurrencyConversion);
       await AsyncStorage.setItem("HistoryCurrencyConversion", jsonValue);
-      // console.log(
-      //   "putDataHistoryCurrencyConversionAsyncStorage",
-      //   resultDataHistoryCurrencyConversion
-      // );
     } catch (e) {
       // saving error
     }
@@ -75,7 +71,6 @@ const CurrencyConversionCalculation = ({
       putDataHistoryCurrencyConversionAsyncStorage(
         arrayDataHistoryCurrencyConversion
       );
-    if (saveHistory) console.log("History", arrayDataHistoryCurrencyConversion);
   }, [arrayDataHistoryCurrencyConversion]);
 
   const startCalculate = () => {
@@ -92,8 +87,8 @@ const CurrencyConversionCalculation = ({
       if (toCurrency) {
         const result = +value * rate;
         var convDate = new Date();
-        saveAsyncStorage(convDate.toString(), result.toFixed(2));
-        onConvertedDate(convDate.toString());
+        saveAsyncStorage(convDate.toLocaleString(), result.toFixed(2));
+        onConvertedDate(convDate.toLocaleString());
         onConvertedAmount(
           "Result: " + result.toFixed(2) + " (" + `${toCurrency["key"]}` + ")"
         );

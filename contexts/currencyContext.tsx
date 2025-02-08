@@ -52,6 +52,8 @@ export function CurrencyProvider({ children }: Props) {
   ] = useState<itemDataCurrencyConversion[]>([]);
 
   const handleAddItemConversion = (item: itemDataCurrencyConversion) => {
+    if (arrayDataHistoryCurrencyConversion.length > 29)
+      arrayDataHistoryCurrencyConversion.length = 29;
     setArrayDataHistoryCurrencyConversion([
       item,
       ...arrayDataHistoryCurrencyConversion,

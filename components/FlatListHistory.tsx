@@ -8,24 +8,16 @@ import {
   StatusBar,
 } from "react-native";
 import { Text } from "react-native";
-import { itemDataCurrencyConversion } from "../config/types";
+import ClearAsyncStorage from "./ClearAsyncStorage";
 
 export const FlatListHistory = () => {
-  const {
-    saveHistory,
-    setSaveHistory,
-    arrayDataHistoryCurrencyConversion,
-    handleAddItemConversion,
-  } = useContext(HistoryConversionContext);
-
-  useEffect(() => {
-    console.log("History", arrayDataHistoryCurrencyConversion);
-  }, []);
+  const { arrayDataHistoryCurrencyConversion } = useContext(
+    HistoryConversionContext
+  );
 
   type ItemProps = { title: string };
 
   const Item = ({ title }: ItemProps) => {
-    console.log("title" + title);
     return (
       <View style={styles.item}>
         <Text style={styles.title}>{title}</Text>
@@ -36,9 +28,27 @@ export const FlatListHistory = () => {
     <SafeAreaView style={styles.container}>
       <FlatList
         data={arrayDataHistoryCurrencyConversion}
-        renderItem={({ item }) => <Item title={item.result} />}
+        renderItem={({ item, index }) => (
+          <Item
+            title={
+              index +
+              1 +
+              ". " +
+              item.dateStr +
+              " : " +
+              item.value +
+              " " +
+              item.fromCurrency?.key +
+              " = " +
+              item.result +
+              " " +
+              item.toCurrency?.key
+            }
+          />
+        )}
         keyExtractor={(item) => item.dateStr}
       />
+      <ClearAsyncStorage />
     </SafeAreaView>
   );
 };

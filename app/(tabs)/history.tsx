@@ -4,7 +4,6 @@ import { FlatListHistory } from "../../components/FlatListHistory";
 export default function Tab() {
   return (
     <View style={styles.container}>
-      <Text>Tab [Home|Settings]</Text>
       <FlatListHistory />
     </View>
   );

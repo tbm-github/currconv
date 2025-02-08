@@ -7,7 +7,6 @@ export default function Tab() {
   return (
     // <CurrencyProvider>
     <View style={styles.container}>
-      <Text>Tab [Home|Settings]</Text>
       <FormCurrencyConversionMain />
     </View>
     // </CurrencyProvider>
